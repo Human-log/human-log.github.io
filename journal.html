@@ -16,10 +16,13 @@
     .form-group input:focus, .form-group textarea:focus {
       border-color: #00ff41; box-shadow: 0 0 10px rgba(0,255,65,0.3);
     }
-    .form-group textarea { min-height: 100px; resize: vertical; }
+    .form-group textarea { min-height: 200px; resize: vertical; }
     .mood-row { display: flex; gap: 0.5rem; align-items: center; }
-    .mood-row input[type=range] { flex: 1; accent-color: #00ff41; background: #0a0a0a; height: 4px; }
+    .mood-row input[type=range] { flex: 1; accent-color: #00ff41; height: 4px; }
     .mood-value { font-size: 1.5rem; min-width: 3rem; text-align: center; }
+    .time-table { width: 100%; border-collapse: collapse; }
+    .time-table td { border: 1px solid #008f11; padding: 0.5rem; }
+    .time-table input { background: #0a0a0a; border: none; color: #00ff41; font-family: inherit; font-size: 1rem; width: 100%; outline: none; }
     .btn-save {
       background: transparent; border: 1px solid #00ff41; color: #00ff41;
       font-family: inherit; font-size: 1.1rem; padding: 0.8rem 2rem;
@@ -37,10 +40,10 @@
     <header>
       <h1>>_Human.Log<span>_</span></h1>
       <div class="tagline">$ tail -f /var/log/life</div>
-      <nav><a href="index.html">~/home</a></nav>
+      <nav><a href="index.html">~/home</a> <a href="tracker.html">~/moods</a></nav>
     </header>
 
-    <div class="status-bar" id="status-bar">NEW ENTRY // INITIALIZING...</div>
+    <div class="status-bar" id="status-bar"></div>
     <h2 style="margin-bottom:1.5rem">> New Journal Entry</h2>
 
     <form id="journal-form">
@@ -63,23 +66,16 @@
       </div>
 
       <div class="form-group">
-        <label>> Morning</label>
-        <textarea id="morning" placeholder="How was your morning? What did you do?"></textarea>
+        <label>> Sleep & Wake</label>
+        <table class="time-table">
+          <tr><td>Wake up time</td><td><input type="time" id="wakeup"></td></tr>
+          <tr><td>Sleep time</td><td><input type="time" id="sleeptime"></td></tr>
+        </table>
       </div>
 
       <div class="form-group">
-        <label>> Afternoon</label>
-        <textarea id="afternoon" placeholder="How was your afternoon?"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>> Evening</label>
-        <textarea id="evening" placeholder="How was your evening?"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>> Food I Had Today</label>
-        <textarea id="food" placeholder="What did you eat today?" style="min-height:60px"></textarea>
+        <label>> About My Day</label>
+        <textarea id="about-day" placeholder="Write about your day..."></textarea>
       </div>
 
       <button type="button" class="btn-save" id="save-btn">[ SAVE ENTRY ]</button>
@@ -98,13 +94,13 @@
 
   <script src="js/matrix-rain.js"></script>
   <script>
-    document.getElementById('status-bar').textContent = 'NEW ENTRY // ' + new Date().toISOString().split('T')[0];
-  </script>
-  <script>
+    const now = new Date();
+    document.getElementById('status-bar').textContent = 'NEW ENTRY // ' + now.toISOString().split('T')[0];
+
     const moodSlider = document.getElementById('mood');
     const moodDisplay = document.getElementById('mood-display');
     const dateInput = document.getElementById('entry-date');
-    dateInput.value = new Date().toISOString().split('T')[0];
+    dateInput.value = now.toISOString().split('T')[0];
 
     moodSlider.addEventListener('input', () => {
       moodDisplay.textContent = moodSlider.value;
@@ -114,18 +110,17 @@
       const date = dateInput.value;
       const mood = moodSlider.value;
       const title = document.getElementById('entry-title').value || 'Journal Entry - ' + date;
-      const morning = document.getElementById('morning').value;
-      const afternoon = document.getElementById('afternoon').value;
-      const evening = document.getElementById('evening').value;
-      const food = document.getElementById('food').value;
+      const wakeup = document.getElementById('wakeup').value;
+      const sleeptime = document.getElementById('sleeptime').value;
+      const about = document.getElementById('about-day').value;
 
       let md = '# ' + title + '\n';
       md += 'Date: ' + date + '\n';
-      md += 'Mood: ' + mood + '/10\n\n';
-      if (morning) md += '## Morning\n' + morning + '\n\n';
-      if (afternoon) md += '## Afternoon\n' + afternoon + '\n\n';
-      if (evening) md += '## Evening\n' + evening + '\n\n';
-      if (food) md += '## Food I Had Today\n' + food + '\n\n';
+      md += 'Mood: ' + mood + '/10\n';
+      if (wakeup) md += 'Wake: ' + wakeup + '\n';
+      if (sleeptime) md += 'Sleep: ' + sleeptime + '\n';
+      md += '\n';
+      if (about) md += about + '\n\n';
       return md;
     }
 
