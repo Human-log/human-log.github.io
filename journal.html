@@ -23,15 +23,22 @@
     .time-table { width: 100%; border-collapse: collapse; }
     .time-table td { border: 1px solid #008f11; padding: 0.5rem; }
     .time-table input { background: #0a0a0a; border: none; color: #00ff41; font-family: inherit; font-size: 1rem; width: 100%; outline: none; }
-    .btn-save {
+    .btn-row { display: flex; gap: 1rem; margin-top: 1rem; }
+    .btn-save, .btn-publish {
       background: transparent; border: 1px solid #00ff41; color: #00ff41;
       font-family: inherit; font-size: 1.1rem; padding: 0.8rem 2rem;
-      cursor: pointer; letter-spacing: 0.1em; width: 100%;
+      cursor: pointer; letter-spacing: 0.1em; text-align: center;
     }
-    .btn-save:hover { background: rgba(0,255,65,0.1); box-shadow: 0 0 15px rgba(0,255,65,0.3); }
-    .preview { margin-top: 2rem; display: none; }
-    .preview.show { display: block; }
-    .preview-box { background: #0a0a0a; border: 1px solid #008f11; padding: 1rem; white-space: pre-wrap; font-size: 0.85rem; max-height: 300px; overflow-y: auto; }
+    .btn-save:hover, .btn-publish:hover { background: rgba(0,255,65,0.1); box-shadow: 0 0 15px rgba(0,255,65,0.3); }
+    .btn-publish { border-color: #ffcc00; color: #ffcc00; }
+    .btn-publish:hover { background: rgba(255,204,0,0.1); box-shadow: 0 0 15px rgba(255,204,0,0.3); }
+    .btn-download { border-color: #008f11; color: #008f11; }
+    .status-msg { margin-top: 1rem; padding: 0.5rem; border: 1px solid #008f11; display: none; text-align: center; }
+    .status-msg.show { display: block; }
+    .status-msg.success { border-color: #00ff41; color: #00ff41; }
+    .status-msg.error { border-color: #ff4444; color: #ff4444; }
+    .server-badge { display: none; border: 1px solid #ffcc00; color: #ffcc00; padding: 0.3rem 0.5rem; font-size: 0.75rem; margin-bottom: 1rem; }
+    .server-badge.show { display: inline-block; }
   </style>
 </head>
 <body>
@@ -44,6 +51,7 @@
     </header>
 
     <div class="status-bar" id="status-bar"></div>
+    <div class="server-badge" id="server-badge">LIVE SERVER MODE</div>
     <h2 style="margin-bottom:1.5rem">> New Journal Entry</h2>
 
     <form id="journal-form">
@@ -78,17 +86,17 @@
         <textarea id="about-day" placeholder="Write about your day..."></textarea>
       </div>
 
-      <button type="button" class="btn-save" id="save-btn">[ SAVE ENTRY ]</button>
+      <div class="btn-row">
+        <button type="button" class="btn-save" id="save-btn">[ SAVE ]</button>
+        <button type="button" class="btn-save btn-download" id="download-btn">[ DOWNLOAD ]</button>
+        <button type="button" class="btn-publish" id="publish-btn">[ PUBLISH ]</button>
+      </div>
     </form>
 
-    <div class="preview" id="preview">
-      <div class="status-bar">PREVIEW</div>
-      <div class="preview-box" id="preview-content"></div>
-      <button type="button" class="btn-save" id="download-btn" style="margin-top:1rem">[ DOWNLOAD .md FILE ]</button>
-    </div>
+    <div class="status-msg" id="status-msg"></div>
 
     <footer style="margin-top:3rem">
-      <p>Save the .md file into the <strong>posts/</strong> folder, then run publish.bat</p>
+      <p>Run <strong>start-journal.ps1</strong> for auto-save &amp; publish, or open journal.html directly to download .md files</p>
     </footer>
   </div>
 
@@ -129,23 +137,71 @@
       return date + '-' + base;
     }
 
+    const apiUrl = typeof API_URL !== 'undefined' ? API_URL : null;
+    if (apiUrl) {
+      document.getElementById('server-badge').classList.add('show');
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('status-msg');
+      el.textContent = msg;
+      el.className = 'status-msg show ' + (type || '');
+      setTimeout(() => el.classList.remove('show'), 5000);
+    }
+
     document.getElementById('save-btn').addEventListener('click', () => {
       const md = generateMarkdown();
-      document.getElementById('preview-content').textContent = md;
-      document.getElementById('preview').classList.add('show');
+      const slug = getSlug(document.getElementById('entry-title').value || 'untitled', dateInput.value);
+
+      if (apiUrl) {
+        fetch(apiUrl + '/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'slug=' + encodeURIComponent(slug) + '&content=' + encodeURIComponent(md)
+        }).then(r => r.json()).then(d => {
+          showStatus('Saved as ' + d.file, 'success');
+        }).catch(() => {
+          showStatus('Failed to save', 'error');
+        });
+      } else {
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = slug + '.md';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showStatus('File downloaded. Move it to the posts/ folder.', 'success');
+      }
     });
 
     document.getElementById('download-btn').addEventListener('click', () => {
-      const date = dateInput.value;
-      const title = document.getElementById('entry-title').value || 'untitled';
-      const slug = getSlug(title, date);
       const md = generateMarkdown();
+      const slug = getSlug(document.getElementById('entry-title').value || 'untitled', dateInput.value);
       const blob = new Blob([md], { type: 'text/markdown' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = slug + '.md';
       a.click();
       URL.revokeObjectURL(a.href);
+      showStatus('File downloaded.', 'success');
+    });
+
+    document.getElementById('publish-btn').addEventListener('click', () => {
+      if (!apiUrl) {
+        showStatus('Open via start-journal.ps1 to use auto-publish', 'error');
+        return;
+      }
+      fetch(apiUrl + '/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'slug=' + encodeURIComponent(getSlug(document.getElementById('entry-title').value || 'untitled', dateInput.value)) + '&content=' + encodeURIComponent(generateMarkdown())
+      }).then(r => r.json()).then(() => {
+        return fetch(apiUrl + '/publish', { method: 'POST' });
+      }).then(r => r.json()).then(d => {
+        if (d.published) showStatus('Saved and published to GitHub!', 'success');
+      }).catch(() => {
+        showStatus('Failed to publish', 'error');
+      });
     });
   </script>
 </body>
