@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journal Entry — Human.Log</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; color: #00ff41; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .form-group input, .form-group textarea {
+      width: 100%; background: #0a0a0a; border: 1px solid #008f11;
+      color: #00ff41; font-family: inherit; font-size: 1rem; padding: 0.5rem;
+      outline: none;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: #00ff41; box-shadow: 0 0 10px rgba(0,255,65,0.3);
+    }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .mood-row { display: flex; gap: 0.5rem; align-items: center; }
+    .mood-row input[type=range] { flex: 1; accent-color: #00ff41; background: #0a0a0a; height: 4px; }
+    .mood-value { font-size: 1.5rem; min-width: 3rem; text-align: center; }
+    .btn-save {
+      background: transparent; border: 1px solid #00ff41; color: #00ff41;
+      font-family: inherit; font-size: 1.1rem; padding: 0.8rem 2rem;
+      cursor: pointer; letter-spacing: 0.1em; width: 100%;
+    }
+    .btn-save:hover { background: rgba(0,255,65,0.1); box-shadow: 0 0 15px rgba(0,255,65,0.3); }
+    .preview { margin-top: 2rem; display: none; }
+    .preview.show { display: block; }
+    .preview-box { background: #0a0a0a; border: 1px solid #008f11; padding: 1rem; white-space: pre-wrap; font-size: 0.85rem; max-height: 300px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+  <div class="container">
+    <header>
+      <h1>>_Human.Log<span>_</span></h1>
+      <div class="tagline">$ tail -f /var/log/life</div>
+      <nav><a href="index.html">~/home</a></nav>
+    </header>
+
+    <div class="status-bar" id="status-bar">NEW ENTRY // INITIALIZING...</div>
+    <h2 style="margin-bottom:1.5rem">> New Journal Entry</h2>
+
+    <form id="journal-form">
+      <div class="form-group">
+        <label>> Date</label>
+        <input type="date" id="entry-date">
+      </div>
+
+      <div class="form-group">
+        <label>> Mood (1-10)</label>
+        <div class="mood-row">
+          <input type="range" id="mood" min="1" max="10" value="7">
+          <span class="mood-value" id="mood-display">7</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>> Entry Title</label>
+        <input type="text" id="entry-title" placeholder="e.g. A Quiet Tuesday">
+      </div>
+
+      <div class="form-group">
+        <label>> Morning</label>
+        <textarea id="morning" placeholder="How was your morning? What did you do?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>> Afternoon</label>
+        <textarea id="afternoon" placeholder="How was your afternoon?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>> Evening</label>
+        <textarea id="evening" placeholder="How was your evening?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>> Food I Had Today</label>
+        <textarea id="food" placeholder="What did you eat today?" style="min-height:60px"></textarea>
+      </div>
+
+      <button type="button" class="btn-save" id="save-btn">[ SAVE ENTRY ]</button>
+    </form>
+
+    <div class="preview" id="preview">
+      <div class="status-bar">PREVIEW</div>
+      <div class="preview-box" id="preview-content"></div>
+      <button type="button" class="btn-save" id="download-btn" style="margin-top:1rem">[ DOWNLOAD .md FILE ]</button>
+    </div>
+
+    <footer style="margin-top:3rem">
+      <p>Save the .md file into the <strong>posts/</strong> folder, then run publish.bat</p>
+    </footer>
+  </div>
+
+  <script src="js/matrix-rain.js"></script>
+  <script>
+    document.getElementById('status-bar').textContent = 'NEW ENTRY // ' + new Date().toISOString().split('T')[0];
+  </script>
+  <script>
+    const moodSlider = document.getElementById('mood');
+    const moodDisplay = document.getElementById('mood-display');
+    const dateInput = document.getElementById('entry-date');
+    dateInput.value = new Date().toISOString().split('T')[0];
+
+    moodSlider.addEventListener('input', () => {
+      moodDisplay.textContent = moodSlider.value;
+    });
+
+    function generateMarkdown() {
+      const date = dateInput.value;
+      const mood = moodSlider.value;
+      const title = document.getElementById('entry-title').value || 'Journal Entry - ' + date;
+      const morning = document.getElementById('morning').value;
+      const afternoon = document.getElementById('afternoon').value;
+      const evening = document.getElementById('evening').value;
+      const food = document.getElementById('food').value;
+
+      let md = '# ' + title + '\n';
+      md += 'Date: ' + date + '\n';
+      md += 'Mood: ' + mood + '/10\n\n';
+      if (morning) md += '## Morning\n' + morning + '\n\n';
+      if (afternoon) md += '## Afternoon\n' + afternoon + '\n\n';
+      if (evening) md += '## Evening\n' + evening + '\n\n';
+      if (food) md += '## Food I Had Today\n' + food + '\n\n';
+      return md;
+    }
+
+    function getSlug(title, date) {
+      const base = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'entry';
+      return date + '-' + base;
+    }
+
+    document.getElementById('save-btn').addEventListener('click', () => {
+      const md = generateMarkdown();
+      document.getElementById('preview-content').textContent = md;
+      document.getElementById('preview').classList.add('show');
+    });
+
+    document.getElementById('download-btn').addEventListener('click', () => {
+      const date = dateInput.value;
+      const title = document.getElementById('entry-title').value || 'untitled';
+      const slug = getSlug(title, date);
+      const md = generateMarkdown();
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = slug + '.md';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+  </script>
+</body>
+</html>

@@ -1,7 +1,12 @@
 [
-{
-    "slug":  "Emotional_day",
-    "title":  "My Day Today",
-    "date":  "2026-07-22"
-}
+    {
+        "slug":  "Emotional_day",
+        "title":  "My Day Today",
+        "date":  "2026-07-22"
+    },
+    {
+        "slug":  "2026-07-22-listen-to-alot-of-podcast-today",
+        "title":  "Listen to alot of podcast today",
+        "date":  "2026-07-22"
+    }
 ]
