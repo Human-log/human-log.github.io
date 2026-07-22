@@ -1,20 +1,8 @@
 [
-    {
-        "slug":  "Emotional_day",
-        "title":  "My Day Today",
-        "date":  "2026-07-22",
-        "mood":  ""
-    },
-    {
-        "slug":  "2026-07-22-had-an-emotional-day-today",
-        "title":  "had an emotional day today",
-        "date":  "2026-07-22",
-        "mood":  "8"
-    },
-    {
-        "slug":  "",
-        "title":  "",
-        "date":  "",
-        "mood":  ""
-    }
+{
+    "slug":  "2026-07-22-had-an-emotional-day-today",
+    "title":  "had an emotional day today",
+    "date":  "2026-07-22",
+    "mood":  "8"
+}
 ]
