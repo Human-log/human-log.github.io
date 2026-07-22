@@ -10,4 +10,6 @@ Get-ChildItem "C:\Users\Sampurna\matrix-blog\posts\*.md" | ForEach-Object {
   $posts += [PSCustomObject]@{ slug = $slug; title = $title; date = $date }
 }
 $posts = $posts | Sort-Object date -Descending
-[System.IO.File]::WriteAllText($jsonPath, ($posts | ConvertTo-Json), [System.Text.UTF8Encoding]::new($false))
+$json = $posts | ConvertTo-Json
+if ($json -notmatch '^\[') { $json = "[`r`n$json`r`n]" }
+[System.IO.File]::WriteAllText($jsonPath, $json, [System.Text.UTF8Encoding]::new($false))
