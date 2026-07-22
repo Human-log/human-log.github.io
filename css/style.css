@@ -1,0 +1,32 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background-color: #000; color: #00ff41; font-family: 'Courier New', Courier, monospace; line-height: 1.6; }
+#matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.15; pointer-events: none; }
+.container { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 2rem; min-height: 100vh; }
+header { border-bottom: 1px solid #00ff41; padding-bottom: 1rem; margin-bottom: 2rem; }
+header h1 { font-size: 2.5rem; text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41; letter-spacing: 0.3em; }
+header h1 span { animation: blink 1s step-end infinite; }
+.tagline { color: #008f11; font-size: 0.9rem; margin-top: 0.5rem; }
+nav { margin-top: 1rem; }
+nav a { color: #00ff41; text-decoration: none; margin-right: 1.5rem; }
+nav a:hover { text-shadow: 0 0 8px #00ff41; }
+.hero { text-align: center; padding: 3rem 0; border: 1px solid #00ff41; margin-bottom: 3rem; background: rgba(0,255,65,0.03); }
+.hero h2 { font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1rem; }
+.hero p { color: #008f11; max-width: 600px; margin: 0 auto; }
+.post-list { list-style: none; }
+.post-item { border: 1px solid #008f11; padding: 1.5rem; margin-bottom: 1.5rem; }
+.post-item:hover { border-color: #00ff41; box-shadow: 0 0 15px rgba(0,255,65,0.2); }
+.post-item h3 { margin-bottom: 0.5rem; }
+.post-item h3 a { color: #00ff41; text-decoration: none; }
+.post-item h3 a:hover { text-shadow: 0 0 8px #00ff41; }
+.post-meta { font-size: 0.8rem; color: #008f11; margin-bottom: 0.8rem; }
+.post-content { color: #ccc; padding: 2rem 0; }
+.post-content h1 { font-size: 2rem; margin: 2rem 0 1rem; text-shadow: 0 0 8px #00ff41; }
+.post-content h2 { font-size: 1.5rem; margin: 1.5rem 0 1rem; color: #00ff41; }
+.post-content p { margin-bottom: 1rem; }
+.post-content code { background: #0a0a0a; border: 1px solid #008f11; padding: 0.2rem 0.4rem; color: #00ff41; }
+.post-content pre { background: #0a0a0a; border: 1px solid #008f11; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
+.post-content blockquote { border-left: 3px solid #00ff41; padding-left: 1rem; margin: 1rem 0; color: #008f11; }
+footer { border-top: 1px solid #008f11; padding-top: 1.5rem; margin-top: 3rem; text-align: center; font-size: 0.8rem; color: #008f11; }
+footer a { color: #00ff41; text-decoration: none; }
+@keyframes blink { 50% { opacity: 0; } }
+.status-bar { font-size: 0.75rem; color: #008f11; border: 1px solid #008f11; padding: 0.3rem 0.5rem; margin-bottom: 2rem; display: inline-block; }
