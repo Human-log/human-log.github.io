@@ -5,5 +5,5 @@ Mood: 6/10
 Wake: 06:45
 Sleep: 22:30
 
-I had a rough day today , i stayed my late yesterday so woke up half asleep and head to the office like a literal zombie, i listen to the novel audio book and done my work in the office after office i went and visit the new member of the family at hospital and had dinner and brought dinner for brother in law, and now am at my room , will tinker around a bit more will head to sleep i literally am half asleep most of the time
+I had a rough day today. I stayed up late yesterday, so I woke up half-asleep and headed to the office like a literal zombie. I listened to a novel audiobook and did my work at the office. After work, I visited the new member of my family at the hospital, had dinner, and brought dinner for my brother-in-law. Now I’m in my room. I’ll tinker around a bit more and then head to bed—I’m literally half-asleep most of the time.
 
