@@ -1,9 +1,9 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$postsDir = "C:\Users\Sampurna\matrix-blog\posts"
+$postsDir = "D:\matrix-blog\posts"
 $git = "C:\Program Files\Git\bin\git.exe"
-$repoDir = "C:\Users\Sampurna\matrix-blog"
+$repoDir = "D:\matrix-blog"
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Human.Log - New Journal Entry"
@@ -149,7 +149,7 @@ $publishBtn.Enabled = $false
 $publishBtn.Add_Click({
   $publishBtn.Text = "PUBLISHING..."
   $publishBtn.Enabled = $false
-  & "C:\Users\Sampurna\matrix-blog\generate-json.ps1"
+  & "D:\matrix-blog\generate-json.ps1"
   & $git -C $repoDir add .
   & $git -C $repoDir commit -m "new post"
   & $git -C $repoDir push

@@ -1,6 +1,6 @@
-$postsPath = "C:\Users\Sampurna\matrix-blog\posts"
-$jsonPath = "C:\Users\Sampurna\matrix-blog\posts.json"
-$moodPath = "C:\Users\Sampurna\matrix-blog\mood-data.json"
+$postsPath = "D:\matrix-blog\posts"
+$jsonPath = "D:\matrix-blog\posts.json"
+$moodPath = "D:\matrix-blog\mood-data.json"
 
 $posts = @()
 $moods = @()
